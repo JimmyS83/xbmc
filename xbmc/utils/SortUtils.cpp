@@ -269,6 +269,22 @@ std::string BySortTitle(SortAttribute attributes, const SortItem &values)
   return title;
 }
 
+std::string ByOriginalTitle(SortAttribute attributes, const SortItem& values)
+{
+
+  std::string title = values.at(FieldOriginalTitle).asString();
+  if (title.empty())
+    title = values.at(FieldSortTitle).asString();
+
+  if (title.empty())
+    title = values.at(FieldTitle).asString();
+
+  if (attributes & SortAttributeIgnoreArticle)
+    title = SortUtils::RemoveArticles(title);
+
+  return title;
+}
+
 std::string ByRating(SortAttribute attributes, const SortItem &values)
 {
   return StringUtils::Format("%f %s", values.at(FieldRating).asFloat(), ByLabel(attributes, values).c_str());
@@ -646,6 +662,7 @@ std::map<SortBy, SortUtils::SortPreparator> fillPreparators()
   preparators[SortByTotalDiscs]               = ByTotalDiscs;
   preparators[SortByOrigDate]                 = ByOrigDate;
   preparators[SortByBPM]                      = ByBPM;
+  preparators[SortByOriginalTitle]            = ByOriginalTitle;
 
   return preparators;
 }
@@ -740,6 +757,9 @@ std::map<SortBy, Fields> fillSortingFields()
   sortingFields[SortByOrigDate].insert(FieldAlbum);
   sortingFields[SortByOrigDate].insert(FieldTrackNumber);
   sortingFields[SortByBPM].insert(FieldBPM);
+  sortingFields[SortByOriginalTitle].insert(FieldOriginalTitle);
+  sortingFields[SortByOriginalTitle].insert(FieldTitle);
+  sortingFields[SortByOriginalTitle].insert(FieldSortTitle);
   sortingFields.insert(std::pair<SortBy, Fields>(SortByRandom, Fields()));
 
   return sortingFields;
@@ -1124,6 +1144,8 @@ const sort_map table[] = {
   { SortByUserRating,               SORT_METHOD_VIDEO_USER_RATING,            SortAttributeIgnoreFolders, 38018 },
   { SortBySortTitle,                SORT_METHOD_VIDEO_SORT_TITLE,             SortAttributeIgnoreFolders, 171 },
   { SortBySortTitle,                SORT_METHOD_VIDEO_SORT_TITLE_IGNORE_THE,  (SortAttribute)(SortAttributeIgnoreFolders | SortAttributeIgnoreArticle), 171 },
+  { SortByOriginalTitle,            SORT_METHOD_VIDEO_ORIGINAL_TITLE,         SortAttributeIgnoreFolders, 20376 },
+  { SortByOriginalTitle,            SORT_METHOD_VIDEO_ORIGINAL_TITLE_IGNORE_THE,  (SortAttribute)(SortAttributeIgnoreFolders | SortAttributeIgnoreArticle), 20376 },
   { SortByYear,                     SORT_METHOD_YEAR,                         SortAttributeIgnoreFolders, 562 },
   { SortByProductionCode,           SORT_METHOD_PRODUCTIONCODE,               SortAttributeNone,          20368 },
   { SortByProgramCount,             SORT_METHOD_PROGRAM_COUNT,                SortAttributeNone,          567 }, // label is "play count"
@@ -1296,6 +1318,7 @@ const std::map<std::string, SortBy> sortMethods = {
   { "totaldiscs",       SortByTotalDiscs },
   { "originaldate",     SortByOrigDate },
   { "bpm",              SortByBPM },
+  { "originaltitle",    SortByOriginalTitle },
 };
 
 SortBy SortUtils::SortMethodFromString(const std::string& sortMethod)

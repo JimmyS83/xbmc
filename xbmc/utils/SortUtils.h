@@ -161,6 +161,8 @@ typedef enum {
   SortByOrigDate,
   /// __56__ : Sort by BPM                        <em>(String: <b><c>bpm</c></b>)</em>
   SortByBPM,
+  /// __57__ : Sort by original title             <em>(String: <b><c>OriginalTitle</c></b>)</em>
+  SortByOriginalTitle,
 } SortBy;
 ///@}
 

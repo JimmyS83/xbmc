@@ -1461,7 +1461,14 @@ bool CGUIDialogVideoInfo::DeleteVideoItem(const CFileItemPtr &item, bool unavail
     if (URIUtils::HasSlashAtEnd(strDeletePath))
       item->m_bIsFolder = true;
 
-    // check if the file/directory can be deleted
+    // Dont leave almost empty movie folders, remove whole movie directory
+    else
+    {
+      strDeletePath = item->GetVideoInfoTag()->m_basePath;
+      item->m_bIsFolder = true;
+    }
+	
+	// check if the file/directory can be deleted
     if (CUtil::SupportsWriteFileOperations(strDeletePath))
     {
       item->SetPath(strDeletePath);
